@@ -1,0 +1,24 @@
+name: Deploy to Prod 
+
+on:
+  #push:
+  workflow_dispatch:  # Manual trigger from GitHub UI
+
+jobs:
+  deploy-notebooks:
+    name: Deploy Notebooks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Upload core notebooks to NEW Databricks workspace
+        run: |
+          databricks workspace import-dir notebooks /Workspace/Projects/Core --overwrite
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_WORKSPACE_URL }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_DEV_TOKEN }}
